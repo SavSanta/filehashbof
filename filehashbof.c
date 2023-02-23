@@ -2,7 +2,6 @@
 #define _CRT_NONSTDC_NO_DEPRECATE
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <windows.h>
 #include <Wincrypt.h>
 
@@ -89,6 +88,7 @@ void main()
     else 
     {
         dwStatus = GetLastError();
+        CloseHandle(hFile);
         printf("Error during CryptGetHashParam! with at %d\n", dwStatus);
         exit(1);
     }
@@ -108,10 +108,12 @@ void main()
 
 HANDLE LoadTargetFile(CHAR * path) 
 {
-    HFILE hFile;
+    HANDLE hFile;
     DWORD dwStatus;
 
-    hFile = CreateFile(path,
+
+    CHAR * path2 = L".gitignore";
+    hFile = CreateFile(path2,
         GENERIC_READ,
         FILE_SHARE_READ,
         NULL,
@@ -165,49 +167,4 @@ void ReadToBuf(HANDLE hFile, HCRYPTPROV * hProv, HCRYPTHASH * hHash)
     }
 
 
-}
-
-void OldLoadTargetFile(CHAR * path)
-{
-    // Test File Area
-
-    FILE* pFile;
-    long lSize;
-    size_t result;
-
-    pFile = fopen(path, "rb");
-    if (pFile == NULL)
-    {
-        fputs("File error", stderr);
-        exit(1);
-    }
-
-    // obtain file size:
-    fseek(pFile, 0, SEEK_END);
-    lSize = ftell(pFile);
-    rewind(pFile);
-
-    // Allocate char ptr memory buffer for entire file:
-    buffer = (char*)malloc(sizeof(char) * lSize);
-    if (buffer == NULL)
-    {
-        fputs("Memory error", stderr);
-        exit(2);
-    }
-
-    printf("Size of bytes of data read of data was %i\n", lSize);
-    // Copy the file into the buffer:
-    result = fread(buffer, 1, lSize, pFile);
-    if (result != lSize)
-    {
-        fputs("Reading error", stderr);
-        exit(3);
-    }
-
-    // Expected whole file loaded into membuffer.
-    // Free up the Test FIle 
-    // Clean up
-    // These are now in the wrong location if this is functionized
-    fclose(pFile);
-    free(buffer);
 }
