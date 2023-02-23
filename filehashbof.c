@@ -8,6 +8,11 @@
 
 #pragma comment (lib, "Crypt32")
 
+void ReadToBuf(HANDLE, HCRYPTPROV*, HCRYPTHASH*);
+HANDLE LoadTargetFile(CHAR* path);
+
+char* buffer;
+
 void main()
 {
     //--------------------------------------------------------------------
@@ -15,10 +20,17 @@ void main()
     DWORD dwStatus;
     HCRYPTPROV hCryptProv;
     HCRYPTHASH hHash;
+    DWORD      dwParam;
+    BYTE       pbData[16];
+    DWORD*     pdwDataLen = sizeof(DWORD);
+    DWORD      cbHash = 0;
+    HANDLE     hFile;
+    
+    //Load The File
+    hFile = LoadTargetFile("C:\\Users\\Administrator\\source\\repos\\filehashbof\\x64\\Release\\vc142.pdb");
 
     //--------------------------------------------------------------------
     // Get a handle to a cryptography provider context.
-
 
     if (CryptAcquireContext(
         &hCryptProv,
@@ -52,7 +64,8 @@ void main()
         exit(1);
     }
 
-
+    // Read To Buffer
+    ReadToBuf(hFile, hCryptProv, hHash);
 
     if (CryptHashData(hHash, (BYTE *) buffer, 0, CRYPT_USERDATA))
     {
@@ -61,19 +74,13 @@ void main()
     }
     else
     {
-
         printf("Error during CryptGetHashData!\n");
         exit(1);
     }
-    
-    DWORD      dwParam = CALG_MD5;
-    BYTE       pbData[16];
-    DWORD*     pdwDataLen = sizeof(DWORD);
-    DWORD cbHash = 0;
-    BYTE rgbHash[16];
+
 
     //if ( CryptGetHashParam(hHash, HP_HASHVAL, pbData, 16, 0))
-    if ((CryptGetHashParam(hHash, HP_HASHVAL, rgbHash, &cbHash, 0)))
+    if ((CryptGetHashParam(hHash, HP_HASHVAL, pbData, &cbHash, 0)))
     {
         printf("Got some success.");
         printf("Hash is %s", pbData);
@@ -83,8 +90,6 @@ void main()
     {
         dwStatus = GetLastError();
         printf("Error during CryptGetHashParam! with at %d\n", dwStatus);
-        fclose(pFile);
-        free(buffer);
         exit(1);
     }
 
@@ -124,13 +129,50 @@ HANDLE LoadTargetFile(CHAR * path)
     return hFile;
 }
 
+void ReadToBuf(HANDLE hFile, HCRYPTPROV * hProv, HCRYPTHASH * hHash)
+{
+    DWORD dwStatus;
+    BOOL bResult;
+    DWORD cbRead = 0;
+    BYTE rgbFile[1024];
+
+    while (bResult = ReadFile(hFile, rgbFile, 1024, &cbRead, NULL))
+    {
+        if (0 == cbRead)
+        {
+            break;
+        }
+
+        if (!CryptHashData(hHash, rgbFile, cbRead, 0))
+        {
+            dwStatus = GetLastError();
+            printf("CryptHashData failed: %d\n", dwStatus);
+            CryptReleaseContext(hProv, 0);
+            CryptDestroyHash(hHash);
+            CloseHandle(hFile);
+            return dwStatus;
+        }
+    }
+
+    if (!bResult)
+    {
+        dwStatus = GetLastError();
+        printf("ReadFile failed: %d\n", dwStatus);
+        CryptReleaseContext(hProv, 0);
+        CryptDestroyHash(hHash);
+        CloseHandle(hFile);
+        return dwStatus;
+    }
+
+
+}
+
 void OldLoadTargetFile(CHAR * path)
 {
     // Test File Area
 
     FILE* pFile;
     long lSize;
-    char* buffer;
     size_t result;
 
     pFile = fopen(path, "rb");
