@@ -87,11 +87,6 @@ void main()
         free(buffer);
         exit(1);
     }
-  
-    // Free up the Test FIle 
-    // Clean up
-    fclose(pFile);
-    free(buffer);
 
     //--------------------------------------------------------------------
     // After processing, hCryptProv and hHash must be released.
@@ -168,4 +163,9 @@ void OldLoadTargetFile(CHAR * path)
     }
 
     // Expected whole file loaded into membuffer.
+    // Free up the Test FIle 
+    // Clean up
+    // These are now in the wrong location if this is functionized
+    fclose(pFile);
+    free(buffer);
 }
