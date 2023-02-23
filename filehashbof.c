@@ -52,43 +52,6 @@ void main()
         exit(1);
     }
 
-    // Test File Area
-
-    FILE* pFile;
-    long lSize;
-    char* buffer;
-    size_t result;
-
-    pFile = fopen("vc142.pdb", "rb");
-    if (pFile == NULL)
-    {
-        fputs("File error", stderr);
-        exit(1);
-    }
-
-    // obtain file size:
-    fseek(pFile, 0, SEEK_END);
-    lSize = ftell(pFile);
-    rewind(pFile);
-
-    // Allocate char ptr memory buffer for entire file:
-    buffer = (char*)malloc(sizeof(char) * lSize);
-    if (buffer == NULL)
-    {
-        fputs("Memory error", stderr);
-        exit(2);
-    }
-
-    printf("Size of bytes of data read of data was %i\n", lSize);
-    // Copy the file into the buffer:
-    result = fread(buffer, 1, lSize, pFile);
-    if (result != lSize)
-    {
-        fputs("Reading error", stderr);
-        exit(3);
-    }
-    
-    // Expected whole file loaded into membuffer.
 
 
     if (CryptHashData(hHash, (BYTE *) buffer, 0, CRYPT_USERDATA))
@@ -164,4 +127,45 @@ HANDLE LoadTargetFile(CHAR * path)
     }
 
     return hFile;
+}
+
+void OldLoadTargetFile(CHAR * path)
+{
+    // Test File Area
+
+    FILE* pFile;
+    long lSize;
+    char* buffer;
+    size_t result;
+
+    pFile = fopen(path, "rb");
+    if (pFile == NULL)
+    {
+        fputs("File error", stderr);
+        exit(1);
+    }
+
+    // obtain file size:
+    fseek(pFile, 0, SEEK_END);
+    lSize = ftell(pFile);
+    rewind(pFile);
+
+    // Allocate char ptr memory buffer for entire file:
+    buffer = (char*)malloc(sizeof(char) * lSize);
+    if (buffer == NULL)
+    {
+        fputs("Memory error", stderr);
+        exit(2);
+    }
+
+    printf("Size of bytes of data read of data was %i\n", lSize);
+    // Copy the file into the buffer:
+    result = fread(buffer, 1, lSize, pFile);
+    if (result != lSize)
+    {
+        fputs("Reading error", stderr);
+        exit(3);
+    }
+
+    // Expected whole file loaded into membuffer.
 }
