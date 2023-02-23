@@ -87,9 +87,8 @@ void main()
         fputs("Reading error", stderr);
         exit(3);
     }
-
+    
     // Expected whole file loaded into membuffer.
-
 
 
     if (CryptHashData(hHash, (BYTE *) buffer, 0, CRYPT_USERDATA))
