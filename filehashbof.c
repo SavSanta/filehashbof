@@ -27,8 +27,8 @@ DWORD main()
     LPCWSTR file = L"C:\\Users\\Administrator\\source\\repos\\filehashbof\\x64\\Release\\vc142.pdb";
     
     //Switch Case for alternative implementations goes here
-    BYTE rgbHash[MD5LEN];
-    cbHash = MD5LEN;
+    BYTE rgbHash[SHA512];
+    cbHash = SHA512;
 
     // Logic to check usage goes here
 
@@ -51,7 +51,7 @@ DWORD main()
     if (!CryptAcquireContext(&hProv,
         NULL,
         NULL,
-        PROV_RSA_FULL,
+        PROV_RSA_AES,
         CRYPT_VERIFYCONTEXT))
     {
         dwStatus = GetLastError();
@@ -60,10 +60,15 @@ DWORD main()
         exit(dwStatus);
     }
 
-    if (!CryptCreateHash(hProv, CALG_MD5, 0, 0, &hHash))
+    // Supportable WIN32 ALGS
+    // CALG_MD5
+    // CALG_SHA_256
+    // CALG_SHA_512
+
+    if (!CryptCreateHash(hProv, CALG_SHA_512, 0, 0, &hHash))
     {
         dwStatus = GetLastError();
-        printf("CryptAcquireContext failed: %d\n", dwStatus);
+        printf("CryptCreateHash failed: %d\n", dwStatus);
         CloseHandle(hFile);
         CryptReleaseContext(hProv, 0);
         exit(dwStatus);
