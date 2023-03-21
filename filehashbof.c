@@ -7,7 +7,11 @@
 #include <Wincrypt.h>
 
 #define BUFSIZE 1024
-#define MD5LEN  16
+
+// Internal State Size Bits
+#define MD5LEN 16
+#define SHA256 32
+#define SHA512 64
 
 DWORD main()
 {
@@ -16,15 +20,19 @@ DWORD main()
     HCRYPTPROV hProv = 0;
     HCRYPTHASH hHash = 0;
     HANDLE hFile = NULL;
-    BYTE rgbFile[BUFSIZE];
     DWORD cbRead = 0;
-    BYTE rgbHash[MD5LEN];
     DWORD cbHash = 0;
+    BYTE rgbFile[BUFSIZE];
     CHAR rgbDigits[] = "0123456789abcdef";
-    LPCWSTR filename = L"C:\\Users\\Administrator\\source\\repos\\filehashbof\\x64\\Release\\vc142.pdb";
-    // Logic to check usage goes here.
+    LPCWSTR file = L"C:\\Users\\Administrator\\source\\repos\\filehashbof\\x64\\Release\\vc142.pdb";
+    
+    //Switch Case for alternative implementations goes here
+    BYTE rgbHash[MD5LEN];
+    cbHash = MD5LEN;
 
-    hFile = CreateFile(filename,
+    // Logic to check usage goes here
+
+    hFile = CreateFile(file,
         GENERIC_READ,
         FILE_SHARE_READ,
         NULL,
@@ -35,9 +43,8 @@ DWORD main()
     if (INVALID_HANDLE_VALUE == hFile)
     {
         dwStatus = GetLastError();
-        printf("Error opening file %s\nError: %d\n", filename,
-            dwStatus);
-        return dwStatus;
+        printf("Error opening file %s\nError: %d\n", file, dwStatus);
+        exit(dwStatus);
     }
 
     // Get handle to the crypto provider
@@ -50,7 +57,7 @@ DWORD main()
         dwStatus = GetLastError();
         printf("CryptAcquireContext failed: %d\n", dwStatus);
         CloseHandle(hFile);
-        return dwStatus;
+        exit(dwStatus);
     }
 
     if (!CryptCreateHash(hProv, CALG_MD5, 0, 0, &hHash))
@@ -59,11 +66,10 @@ DWORD main()
         printf("CryptAcquireContext failed: %d\n", dwStatus);
         CloseHandle(hFile);
         CryptReleaseContext(hProv, 0);
-        return dwStatus;
+        exit(dwStatus);
     }
 
-    while (bResult = ReadFile(hFile, rgbFile, BUFSIZE,
-        &cbRead, NULL))
+    while (bResult = ReadFile(hFile, rgbFile, BUFSIZE, &cbRead, NULL))
     {
         if (0 == cbRead)
         {
@@ -77,28 +83,28 @@ DWORD main()
             CryptReleaseContext(hProv, 0);
             CryptDestroyHash(hHash);
             CloseHandle(hFile);
-            return dwStatus;
+            exit(dwStatus);
         }
     }
 
     if (!bResult)
     {
         dwStatus = GetLastError();
-        printf("ReadFile failed: %d\n", dwStatus);
+        printf("ReadFile call failed: %d\n", dwStatus);
         CryptReleaseContext(hProv, 0);
         CryptDestroyHash(hHash);
         CloseHandle(hFile);
-        return dwStatus;
+        exit(dwStatus);
     }
 
-    cbHash = MD5LEN;
+
+    // Original hashstring calculation regards usage of cbhash for correct bits length
     if (CryptGetHashParam(hHash, HP_HASHVAL, rgbHash, &cbHash, 0))
     {
-        printf("MD5 hash of file %s is: ", filename);
+        printf("Hash of file %s is: ", file);
         for (DWORD i = 0; i < cbHash; i++)
         {
-            printf("%c%c", rgbDigits[rgbHash[i] >> 4],
-                rgbDigits[rgbHash[i] & 0xf]);
+            printf("%c%c", rgbDigits[rgbHash[i] >> 4], rgbDigits[rgbHash[i] & 0xf]);
         }
         printf("\n");
     }
@@ -106,11 +112,11 @@ DWORD main()
     {
         dwStatus = GetLastError();
         printf("CryptGetHashParam failed: %d\n", dwStatus);
+        exit(dwStatus);
     }
 
     CryptDestroyHash(hHash);
     CryptReleaseContext(hProv, 0);
     CloseHandle(hFile);
-
-    return dwStatus;
+    exit(dwStatus);
 }
