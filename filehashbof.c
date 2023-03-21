@@ -13,7 +13,7 @@
 #define SHA256 32
 #define SHA512 64
 
-DWORD main()
+DWORD main(int argc, char* argv[])
 {
     DWORD dwStatus = 0;
     BOOL bResult = FALSE;
@@ -24,8 +24,9 @@ DWORD main()
     DWORD cbHash = 0;
     BYTE rgbFile[BUFSIZE];
     CHAR rgbDigits[] = "0123456789ABCDEF";
-    LPCWSTR file = L"C:\\Users\\Administrator\\source\\repos\\filehashbof\\x64\\Release\\vc142.pdb";  // FixMe:
-    
+    //LPCWSTR file = "C:\\Users\\Administrator\\source\\repos\\filehashbof\\x64\\Release\\vc142.pdb";  // FixMe:
+    PCHAR file = argv[2];
+
     // Switch Case should ideally go here for alternative HASHING implementations 
     // However with testing leaving this SHA512 seems to be fine in ignoring cap
     // Could also preallocate with char null-terms but for minimum viability will leave as so.
@@ -33,7 +34,7 @@ DWORD main()
     cbHash = SHA512;
 
     // Attempt to grab handle to file 
-    hFile = CreateFile(file,
+    hFile = CreateFileA(file,
         GENERIC_READ,
         FILE_SHARE_READ,
         NULL,
