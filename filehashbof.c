@@ -23,15 +23,16 @@ DWORD main()
     DWORD cbRead = 0;
     DWORD cbHash = 0;
     BYTE rgbFile[BUFSIZE];
-    CHAR rgbDigits[] = "0123456789abcdef";
-    LPCWSTR file = L"C:\\Users\\Administrator\\source\\repos\\filehashbof\\x64\\Release\\vc142.pdb";
+    CHAR rgbDigits[] = "0123456789ABCDEF";
+    LPCWSTR file = L"C:\\Users\\Administrator\\source\\repos\\filehashbof\\x64\\Release\\vc142.pdb";  // FixMe:
     
-    //Switch Case for alternative implementations goes here
+    // Switch Case should ideally go here for alternative HASHING implementations 
+    // However with testing leaving this SHA512 seems to be fine in ignoring cap
+    // Could also preallocate with char null-terms but for minimum viability will leave as so.
     BYTE rgbHash[SHA512];
     cbHash = SHA512;
 
-    // Logic to check usage goes here
-
+    // Attempt to grab handle to file 
     hFile = CreateFile(file,
         GENERIC_READ,
         FILE_SHARE_READ,
@@ -47,7 +48,7 @@ DWORD main()
         exit(dwStatus);
     }
 
-    // Get handle to the crypto provider
+    // Grabs ctx CSP Provider using the best suited for our current supported hashs
     if (!CryptAcquireContext(&hProv,
         NULL,
         NULL,
@@ -60,12 +61,13 @@ DWORD main()
         exit(dwStatus);
     }
 
-    // Supportable WIN32 ALGS
+    // Key hashing areas here
+    // Supportable WIN32 HASHING ALGS
     // CALG_MD5
     // CALG_SHA_256
     // CALG_SHA_512
 
-    if (!CryptCreateHash(hProv, CALG_SHA_512, 0, 0, &hHash))
+    if (!CryptCreateHash(hProv, CALG_MD5, 0, 0, &hHash))
     {
         dwStatus = GetLastError();
         printf("CryptCreateHash failed: %d\n", dwStatus);
@@ -74,6 +76,7 @@ DWORD main()
         exit(dwStatus);
     }
 
+    // Read the file contents for the hasher
     while (bResult = ReadFile(hFile, rgbFile, BUFSIZE, &cbRead, NULL))
     {
         if (0 == cbRead)
