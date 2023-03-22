@@ -17,6 +17,7 @@
 
 void go(char* args, int alen)
 {
+    datap parser;
     DWORD dwStatus = 0;
     HANDLE hFile = NULL;
     BOOL bResult = FALSE;
@@ -26,13 +27,19 @@ void go(char* args, int alen)
     DWORD cbHash = 0;
     BYTE rgbFile[BUFSIZE];
     CHAR rgbDigits[] = "0123456789ABCDEF";
-    PCHAR file = args[1];
+    PCHAR file;
+    PCHAR alg;
+    UINT algid = 0;
 
     // Switch Case should ideally go here for alternative HASHING implementations 
     // However with testing leaving this SHA512 seems to be fine in ignoring cap
     // Could also preallocate with char null-terms but for minimum viability will leave as so.
     BYTE rgbHash[SHA512];
     cbHash = SHA512;
+    
+    BeaconDataParse(&parser, args, alen);
+    file = BeaconDataExtract(&parser, NULL);
+    alg = BeaconDataExtract(&parser, NULL);
 
     if (alen != 3)
     {
@@ -75,8 +82,6 @@ void go(char* args, int alen)
     // CALG_MD5
     // CALG_SHA_256
     // CALG_SHA_512
-    PCHAR alg = args[2];
-    UINT algid = 0;
 #ifdef Debug
     printf("L-77, %s --- should be %s\n\n", alg, args[2]);
 #endif
