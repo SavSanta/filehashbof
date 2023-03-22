@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <windows.h>
-#include <wincrypt.h>
+#include <Wincrypt.h>
 #include "beacon.h"
 #include "filehashbof.h"
 
@@ -26,8 +26,8 @@ void go(char* args, int alen)
     DWORD cbHash = 0;
     BYTE rgbFile[BUFSIZE];
     CHAR rgbDigits[] = "0123456789ABCDEF";
-    PCHAR file;
-    PCHAR alg;
+    PCHAR file = NULL;
+    PCHAR alg = NULL;
     UINT algid = 0;
 
     // Switch Case should ideally go here for alternative HASHING implementations 
@@ -40,7 +40,7 @@ void go(char* args, int alen)
     file = BeaconDataExtract(&parser, NULL);
     alg = BeaconDataExtract(&parser, NULL);
 
-    if (alen != 3)
+    if (file == NULL || alg == NULL)
     {
         // Syntax match filehashass.exe
         BeaconPrintf(CALLBACK_ERROR, "Syntax Error: filehashbof.o <filepath> <algorithm>");
