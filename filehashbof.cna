@@ -7,11 +7,13 @@ beacon_command_register(
 alias fhb {
 	local('$bid $barch $handle $data $path $hashtype $args');
 	
+	$bid = $1;
 	# figure out the arch of this session
 	$barch  = barch($1);
 	
 	# read in the right BOF file
-	$handle = openf(script_resource("filehash. $+ $barch $+ .o"));
+	#$handle = openf(script_resource("filehash. $+ $barch $+ .o"));
+	$handle = openf("/home/kali/Projects/filehashbof/filehashbof.x86.o");
 	$data   = readb($handle, -1);
 	closef($handle);
 	
@@ -25,13 +27,12 @@ alias fhb {
         }
 
 	# pack args
-	$args = bof_pack($1, "zz", $path, $hashtype);
+	$args = bof_pack($bid, "zz", $path, $hashtype);
 	
 	# announce what we're doing
 	btask($1, "Running filehash BOF");
 	
 	# execute it.
-	beacon_inline_execute($1, $data, "go", $args)
-        #blog2($bid, "Dispatching rdir $type $path to BOF.");
-
+	beacon_inline_execute($1, $data, "go", $args);
+        blog2($bid, "Finished the filehashbof seq.");
 }
