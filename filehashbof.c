@@ -1,6 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define _CRT_NONSTDC_NO_DEPRECATE
-#define DBG
+#define Debug
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -77,7 +77,7 @@ void go(char* args, int alen)
     // CALG_SHA_512
     PCHAR alg = args[2];
     UINT algid = 0;
-#ifdef DBG
+#ifdef Debug
     printf("L-77, %s --- should be %s\n\n", alg, args[2]);
 #endif
 
@@ -144,10 +144,10 @@ void go(char* args, int alen)
         //Maybe swap out for cats?
         for (DWORD i = 0; i < cbHash; i++)
         {
-            printf("%c%c", rgbDigits[rgbHash[i] >> 4], rgbDigits[rgbHash[i] & 0xf]);
+            BeaconPrintf(CALLBACK_OUTPUT, "%c%c", rgbDigits[rgbHash[i] >> 4], rgbDigits[rgbHash[i] & 0xf]);
         }
-        printf("\t %s-hash\t %s", alg, file);
-        printf("\n");
+        BeaconPrintf(CALLBACK_OUTPUT, "\t %s-hash\t %s", alg, file);
+        BeaconPrintf(CALLBACK_OUTPUT, "\n");
     }
     else
     {
