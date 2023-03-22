@@ -1,37 +1,43 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define _CRT_NONSTDC_NO_DEPRECATE
+#define DBG
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <windows.h>
 #include <Wincrypt.h>
 
-#define BUFSIZE 1024
-
 // Internal State Size Bits
 #define MD5LEN 16
 #define SHA256 32
 #define SHA512 64
+#define BUFSIZE 1024
 
 DWORD main(int argc, char* argv[])
 {
     DWORD dwStatus = 0;
+    HANDLE hFile = NULL;
     BOOL bResult = FALSE;
     HCRYPTPROV hProv = 0;
     HCRYPTHASH hHash = 0;
-    HANDLE hFile = NULL;
     DWORD cbRead = 0;
     DWORD cbHash = 0;
     BYTE rgbFile[BUFSIZE];
     CHAR rgbDigits[] = "0123456789ABCDEF";
-    //LPCWSTR file = "C:\\Users\\Administrator\\source\\repos\\filehashbof\\x64\\Release\\vc142.pdb";  // FixMe:
-    PCHAR file = argv[2];
+    PCHAR file = argv[1];
 
     // Switch Case should ideally go here for alternative HASHING implementations 
     // However with testing leaving this SHA512 seems to be fine in ignoring cap
     // Could also preallocate with char null-terms but for minimum viability will leave as so.
     BYTE rgbHash[SHA512];
     cbHash = SHA512;
+
+    if (argc == 3)
+    {
+        // Syntax match filehashass.exe
+        printf("Syntax Error: filehashbof.o <filepath> <algorithm>");
+        return(-1);
+    }
 
     // Attempt to grab handle to file 
     hFile = CreateFileA(file,
@@ -57,21 +63,43 @@ DWORD main(int argc, char* argv[])
         CRYPT_VERIFYCONTEXT))
     {
         dwStatus = GetLastError();
-        printf("CryptAcquireContext failed: %d\n", dwStatus);
+        printf("CryptAcquireContext failure with code: %d\n", dwStatus);
         CloseHandle(hFile);
         exit(dwStatus);
     }
 
-    // Key hashing areas here
-    // Supportable WIN32 HASHING ALGS
+    // Key hashing supportable WIN32 HASHING ALGS
     // CALG_MD5
     // CALG_SHA_256
     // CALG_SHA_512
+    PCHAR alg = tolower(argv[2]);
+    UINT algid = 0;
+#ifdef DBG
+    printf("L-77, %s --- should be %s\n\n", alg, argv[2]);
+#endif
 
-    if (!CryptCreateHash(hProv, CALG_MD5, 0, 0, &hHash))
+    if (strcmp(alg, "md5") == 0)
+    {
+        algid = CALG_MD5;
+    }
+    else if (strcmp(alg, "sha256") == 0 )
+    {
+        algid = CALG_SHA_256;
+    }
+    else if (strcmp(alg, "sha512") == 0)
+    {
+        algid = CALG_SHA_512;
+    }
+    else
+    {
+        printf("Error: Algorithm does not appear to be supported.");
+        exit(-500);
+    }
+
+    if (!CryptCreateHash(hProv, algid, 0, 0, &hHash))
     {
         dwStatus = GetLastError();
-        printf("CryptCreateHash failed: %d\n", dwStatus);
+        printf("CryptCreateHash failure with code: %d\n", dwStatus);
         CloseHandle(hFile);
         CryptReleaseContext(hProv, 0);
         exit(dwStatus);
@@ -88,7 +116,7 @@ DWORD main(int argc, char* argv[])
         if (!CryptHashData(hHash, rgbFile, cbRead, 0))
         {
             dwStatus = GetLastError();
-            printf("CryptHashData failed: %d\n", dwStatus);
+            printf("CryptHashData failure with code: %d\n", dwStatus);
             CryptReleaseContext(hProv, 0);
             CryptDestroyHash(hHash);
             CloseHandle(hFile);
@@ -99,28 +127,29 @@ DWORD main(int argc, char* argv[])
     if (!bResult)
     {
         dwStatus = GetLastError();
-        printf("ReadFile call failed: %d\n", dwStatus);
+        printf("ReadFile call failure with code: %d\n", dwStatus);
         CryptReleaseContext(hProv, 0);
         CryptDestroyHash(hHash);
         CloseHandle(hFile);
         exit(dwStatus);
     }
 
-
     // Original hashstring calculation regards usage of cbhash for correct bits length
     if (CryptGetHashParam(hHash, HP_HASHVAL, rgbHash, &cbHash, 0))
     {
-        printf("Hash of file %s is: ", file);
+        //cbHash internal bit count is automatically calculated by the API so no need for manual defines
+        //Maybe swap out for cats?
         for (DWORD i = 0; i < cbHash; i++)
         {
             printf("%c%c", rgbDigits[rgbHash[i] >> 4], rgbDigits[rgbHash[i] & 0xf]);
         }
+        printf("\t %s-hash\t %s", alg, file);
         printf("\n");
     }
     else
     {
         dwStatus = GetLastError();
-        printf("CryptGetHashParam failed: %d\n", dwStatus);
+        printf("CryptGetHashParam failure with code: %d\n", dwStatus);
         exit(dwStatus);
     }
 
