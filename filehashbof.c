@@ -1,6 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define _CRT_NONSTDC_NO_DEPRECATE
-#define Debug
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -36,7 +35,7 @@ void go(char* args, int alen)
     // Could also preallocate with char null-terms but for minimum viability will leave as so.
     BYTE rgbHash[SHA512];
     cbHash = SHA512;
-    
+
     BeaconDataParse(&parser, args, alen);
     file = BeaconDataExtract(&parser, NULL);
     alg = BeaconDataExtract(&parser, NULL);
@@ -82,15 +81,12 @@ void go(char* args, int alen)
     // CALG_MD5
     // CALG_SHA_256
     // CALG_SHA_512
-#ifdef Debug
-    printf("L-77, %s --- should be %s\n\n", alg, args[2]);
-#endif
 
     if (MSVCRT$strcmp(alg, "md5") == 0)
     {
         algid = CALG_MD5;
     }
-    else if (MSVCRT$strcmp(alg, "sha256") == 0 )
+    else if (MSVCRT$strcmp(alg, "sha256") == 0)
     {
         algid = CALG_SHA_256;
     }
@@ -121,7 +117,7 @@ void go(char* args, int alen)
             break;
         }
 
-        if (!CryptHashData(hHash, rgbFile, cbRead, 0))
+        if (!ADVAPI32$CryptHashData(hHash, rgbFile, cbRead, 0))
         {
             dwStatus = KERNEL32$GetLastError();
             BeaconPrintf(CALLBACK_ERROR, "CryptHashData failure with code: %d\n", dwStatus);
