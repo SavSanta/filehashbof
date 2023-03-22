@@ -363,3 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 /filehashbof.v1.zip
 /filehashbof.x86.o
+/hello.o
+/helloworld.c
