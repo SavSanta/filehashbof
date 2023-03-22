@@ -157,6 +157,9 @@
     <ClInclude Include="beacon.h" />
     <ClInclude Include="filehashbof.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="filehashbof.cna" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
