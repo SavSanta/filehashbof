@@ -1,9 +1,8 @@
 #pragma once
 #define IsDir(a) ((a)&FILE_ATTRIBUTE_DIRECTORY)
+
 void OutHead(formatp*);
-LPSTR DerefAMask(DWORD, LPTSTR);
 void Touch(WCHAR[]);
-void AuthUser(WCHAR[], WCHAR[]);
 
 // WINBOOL IS FINICKY AF in VS 2019
 
@@ -18,6 +17,7 @@ WINBASEAPI BOOL __stdcall KERNEL32$FileTimeToSystemTime(CONST FILETIME* lpFileTi
 WINBASEAPI BOOL __stdcall KERNEL32$FindNextFileA(HANDLE hFindFile, LPWIN32_FIND_DATAA lpFindFileData);
 WINBASEAPI BOOL __stdcall KERNEL32$FindClose(HANDLE hFindFile);
 WINBASEAPI void   __cdecl MSVCRT$exit(int);
+
 // orig string header defs
 // WINBASEAPI size_t __cdecl strlen(const char* _Str);
 // char * __cdecl strcat(char * __restrict__ _Dest,const char * __restrict__ _Source);

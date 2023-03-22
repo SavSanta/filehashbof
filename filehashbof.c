@@ -15,7 +15,7 @@
 #define SHA512 64
 #define BUFSIZE 1024
 
-DWORD main(int argc, char* argv[])
+void go(char* args, int alen)
 {
     DWORD dwStatus = 0;
     HANDLE hFile = NULL;
@@ -26,7 +26,7 @@ DWORD main(int argc, char* argv[])
     DWORD cbHash = 0;
     BYTE rgbFile[BUFSIZE];
     CHAR rgbDigits[] = "0123456789ABCDEF";
-    PCHAR file = argv[1];
+    PCHAR file = args[1];
 
     // Switch Case should ideally go here for alternative HASHING implementations 
     // However with testing leaving this SHA512 seems to be fine in ignoring cap
@@ -34,7 +34,7 @@ DWORD main(int argc, char* argv[])
     BYTE rgbHash[SHA512];
     cbHash = SHA512;
 
-    if (argc == 3)
+    if (alen != 3)
     {
         // Syntax match filehashass.exe
         printf("Syntax Error: filehashbof.o <filepath> <algorithm>");
@@ -74,10 +74,10 @@ DWORD main(int argc, char* argv[])
     // CALG_MD5
     // CALG_SHA_256
     // CALG_SHA_512
-    PCHAR alg = tolower(argv[2]);
+    PCHAR alg = tolower(args[2]);
     UINT algid = 0;
 #ifdef DBG
-    printf("L-77, %s --- should be %s\n\n", alg, argv[2]);
+    printf("L-77, %s --- should be %s\n\n", alg, args[2]);
 #endif
 
     if (strcmp(alg, "md5") == 0)
