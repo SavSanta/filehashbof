@@ -1,9 +1,6 @@
 #pragma once
 
 // Note that all wincrypt aliases are essentially the same as standard because Windows C is fvcking dumb.
-
-void OutHead(formatp*);
-
 WINBASEAPI int WINAPI MSVCRT$strcmp(const char* dest, const char* source);
 WINBASEAPI HANDLE __stdcall KERNEL32$CreateFileA(LPCSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile);
 WINBASEAPI DWORD __stdcall KERNEL32$GetLastError(VOID);
