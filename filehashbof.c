@@ -45,7 +45,7 @@ void go(char* args, int alen)
     {
         // Syntax match filehashass.exe
         BeaconPrintf(CALLBACK_ERROR, "Syntax Error: filehashbof.o <filepath> <algorithm>");
-        return(-1);
+        return;
     }
 
     // Attempt to grab handle to file 
@@ -61,7 +61,7 @@ void go(char* args, int alen)
     {
         dwStatus = KERNEL32$GetLastError();
         BeaconPrintf(CALLBACK_ERROR, "Error opening file %s\nError: %d\n", file, dwStatus);
-        return(dwStatus);
+        return;
     }
 
     // Grabs ctx CSP Provider using the best suited for our current supported hashs
@@ -75,7 +75,7 @@ void go(char* args, int alen)
         dwStatus = KERNEL32$GetLastError();
         BeaconPrintf(CALLBACK_ERROR, "CryptAcquireContext failure with code: %d\n", dwStatus);
         KERNEL32$CloseHandle(hFile);
-        return(dwStatus);
+        return;
     }
 
     // Key hashing supportable WIN32 HASHING ALGS
@@ -101,7 +101,7 @@ void go(char* args, int alen)
     else
     {
         BeaconPrintf(CALLBACK_ERROR, "Error: Algorithm does not appear to be supported.");
-        return(-500);
+        return;
     }
 
     if (!ADVAPI32$CryptCreateHash(hProv, algid, 0, 0, &hHash))
@@ -110,7 +110,7 @@ void go(char* args, int alen)
         BeaconPrintf(CALLBACK_ERROR, "CryptCreateHash failure with code: %d\n", dwStatus);
         KERNEL32$CloseHandle(hFile);
         ADVAPI32$CryptReleaseContext(hProv, 0);
-        return(dwStatus);
+        return;
     }
 
     // Read the file contents for the hasher
@@ -128,7 +128,7 @@ void go(char* args, int alen)
             ADVAPI32$CryptReleaseContext(hProv, 0);
             ADVAPI32$CryptDestroyHash(hHash);
             KERNEL32$CloseHandle(hFile);
-            return(dwStatus);
+            return;
         }
     }
 
@@ -139,7 +139,7 @@ void go(char* args, int alen)
         ADVAPI32$CryptReleaseContext(hProv, 0);
         ADVAPI32$CryptDestroyHash(hHash);
         KERNEL32$CloseHandle(hFile);
-        return(dwStatus);
+        return;
     }
 
     // Original hashstring calculation regards usage of cbhash for correct bits length
@@ -158,11 +158,11 @@ void go(char* args, int alen)
     {
         dwStatus = KERNEL32$GetLastError();
         BeaconPrintf(CALLBACK_ERROR, "ADVAPI32$CryptGetHashParam failure with code: %d\n", dwStatus);
-        return(dwStatus);
+        return;
     }
 
     ADVAPI32$CryptDestroyHash(hHash);
     ADVAPI32$CryptReleaseContext(hProv, 0);
     KERNEL32$CloseHandle(hFile);
-    return(dwStatus);
+    return;
 }
