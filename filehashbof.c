@@ -37,7 +37,7 @@ void go(char* args, int alen)
     if (alen != 3)
     {
         // Syntax match filehashass.exe
-        printf("Syntax Error: filehashbof.o <filepath> <algorithm>");
+        BeaconPrintf(CALLBACK_ERROR, "Syntax Error: filehashbof.o <filepath> <algorithm>");
         return(-1);
     }
 
@@ -53,7 +53,7 @@ void go(char* args, int alen)
     if (INVALID_HANDLE_VALUE == hFile)
     {
         dwStatus = KERNEL32$GetLastError();
-        printf("Error opening file %s\nError: %d\n", file, dwStatus);
+        BeaconPrintf(CALLBACK_ERROR, "Error opening file %s\nError: %d\n", file, dwStatus);
         return(dwStatus);
     }
 
@@ -66,7 +66,7 @@ void go(char* args, int alen)
         CRYPT_VERIFYCONTEXT))
     {
         dwStatus = KERNEL32$GetLastError();
-        printf("CryptAcquireContext failure with code: %d\n", dwStatus);
+        BeaconPrintf(CALLBACK_ERROR, "CryptAcquireContext failure with code: %d\n", dwStatus);
         KERNEL32$CloseHandle(hFile);
         return(dwStatus);
     }
@@ -95,14 +95,14 @@ void go(char* args, int alen)
     }
     else
     {
-        printf("Error: Algorithm does not appear to be supported.");
+        BeaconPrintf(CALLBACK_ERROR, "Error: Algorithm does not appear to be supported.");
         return(-500);
     }
 
     if (!ADVAPI32$CryptCreateHash(hProv, algid, 0, 0, &hHash))
     {
         dwStatus = KERNEL32$GetLastError();
-        printf("CryptCreateHash failure with code: %d\n", dwStatus);
+        BeaconPrintf(CALLBACK_ERROR, "CryptCreateHash failure with code: %d\n", dwStatus);
         KERNEL32$CloseHandle(hFile);
         ADVAPI32$CryptReleaseContext(hProv, 0);
         return(dwStatus);
@@ -119,7 +119,7 @@ void go(char* args, int alen)
         if (!CryptHashData(hHash, rgbFile, cbRead, 0))
         {
             dwStatus = KERNEL32$GetLastError();
-            printf("CryptHashData failure with code: %d\n", dwStatus);
+            BeaconPrintf(CALLBACK_ERROR, "CryptHashData failure with code: %d\n", dwStatus);
             ADVAPI32$CryptReleaseContext(hProv, 0);
             ADVAPI32$CryptDestroyHash(hHash);
             KERNEL32$CloseHandle(hFile);
@@ -130,7 +130,7 @@ void go(char* args, int alen)
     if (!bResult)
     {
         dwStatus = KERNEL32$GetLastError();
-        printf("ReadFile call failure with code: %d\n", dwStatus);
+        BeaconPrintf(CALLBACK_ERROR, "ReadFile call failure with code: %d\n", dwStatus);
         ADVAPI32$CryptReleaseContext(hProv, 0);
         ADVAPI32$CryptDestroyHash(hHash);
         KERNEL32$CloseHandle(hFile);
@@ -152,7 +152,7 @@ void go(char* args, int alen)
     else
     {
         dwStatus = KERNEL32$GetLastError();
-        printf("ADVAPI32$CryptGetHashParam failure with code: %d\n", dwStatus);
+        BeaconPrintf(CALLBACK_ERROR, "ADVAPI32$CryptGetHashParam failure with code: %d\n", dwStatus);
         return(dwStatus);
     }
 
