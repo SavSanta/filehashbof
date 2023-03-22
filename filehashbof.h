@@ -1,23 +1,18 @@
 #pragma once
-#define IsDir(a) ((a)&FILE_ATTRIBUTE_DIRECTORY)
+
+// Note that all wincrypt aliases are essentially the same as standard because Windows C is fvcking dumb.
 
 void OutHead(formatp*);
-void Touch(WCHAR[]);
 
-// WINBOOL IS FINICKY AF in VS 2019
-
-WINBASEAPI void __cdecl MSVCRT$memset(void* dest, int c, size_t count);
-WINBASEAPI size_t __cdecl MSVCRT$strlen(const char* _Str);
-WINBASEAPI void* WINAPI MSVCRT$strcat(const char* dest, const char* source);
-WINBASEAPI void* WINAPI MSVCRT$strcpy(const char* dest, const char* source);
 WINBASEAPI int WINAPI MSVCRT$strcmp(const char* dest, const char* source);
-WINBASEAPI HANDLE __stdcall KERNEL32$FindFirstFileA(LPCSTR lpFileName, LPWIN32_FIND_DATAA lpFindFileData);
+WINBASEAPI HANDLE __stdcall KERNEL32$CreateFileA(LPCSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile);
 WINBASEAPI DWORD __stdcall KERNEL32$GetLastError(VOID);
-WINBASEAPI BOOL __stdcall KERNEL32$FileTimeToSystemTime(CONST FILETIME* lpFileTime, LPSYSTEMTIME lpSystemTime);
-WINBASEAPI BOOL __stdcall KERNEL32$FindNextFileA(HANDLE hFindFile, LPWIN32_FIND_DATAA lpFindFileData);
-WINBASEAPI BOOL __stdcall KERNEL32$FindClose(HANDLE hFindFile);
-WINBASEAPI void   __cdecl MSVCRT$exit(int);
-
-// orig string header defs
-// WINBASEAPI size_t __cdecl strlen(const char* _Str);
-// char * __cdecl strcat(char * __restrict__ _Dest,const char * __restrict__ _Source);
+WINBASEAPI BOOL WINAPI KERNEL32$ReadFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, LPDWORD lpNumberOfBytesRead, LPOVERLAPPED lpOverlapped);
+WINBASEAPI BOOL WINAPI KERNEL32$CloseHandle(HANDLE hObject);
+WINBASEAPI void __cdecl MSVCRT$exit(int);
+__declspec(dllimport) BOOL WINAPI ADVAPI32$CryptAcquireContextA(HCRYPTPROV* phProv, LPCSTR szContainer, LPCSTR szProvider, DWORD dwProvType, DWORD dwFlags);
+__declspec(dllimport) BOOL WINAPI ADVAPI32$CryptCreateHash(HCRYPTPROV hProv, ALG_ID Algid, HCRYPTKEY hKey, DWORD dwFlags, HCRYPTHASH* phHash);
+__declspec(dllimport) BOOL WINAPI ADVAPI32$CryptReleaseContext(HCRYPTPROV hProv, DWORD dwFlags);
+__declspec(dllimport) BOOL WINAPI ADVAPI32$CryptHashData(HCRYPTHASH hHash, CONST BYTE* pbData, DWORD dwDataLen, DWORD dwFlags);
+__declspec(dllimport) BOOL WINAPI ADVAPI32$CryptDestroyHash(HCRYPTHASH hHash);
+__declspec(dllimport) BOOL WINAPI ADVAPI32$CryptGetHashParam(HCRYPTHASH hHash, DWORD dwParam, BYTE* pbData, DWORD* pdwDataLen, DWORD dwFlags);

@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <windows.h>
-#include <Wincrypt.h>
+#include <wincrypt.h>
 #include "beacon.h"
 #include "filehashbof.h"
 
@@ -42,7 +42,7 @@ void go(char* args, int alen)
     }
 
     // Attempt to grab handle to file 
-    hFile = CreateFileA(file,
+    hFile = KERNEL32$CreateFileA(file,
         GENERIC_READ,
         FILE_SHARE_READ,
         NULL,
@@ -52,21 +52,22 @@ void go(char* args, int alen)
 
     if (INVALID_HANDLE_VALUE == hFile)
     {
-        dwStatus = GetLastError();
+        dwStatus = KERNEL32$GetLastError();
         printf("Error opening file %s\nError: %d\n", file, dwStatus);
         return(dwStatus);
     }
 
     // Grabs ctx CSP Provider using the best suited for our current supported hashs
-    if (!CryptAcquireContext(&hProv,
+    // DefaultW
+    if (!ADVAPI32$CryptAcquireContextA(&hProv,
         NULL,
         NULL,
         PROV_RSA_AES,
         CRYPT_VERIFYCONTEXT))
     {
-        dwStatus = GetLastError();
+        dwStatus = KERNEL32$GetLastError();
         printf("CryptAcquireContext failure with code: %d\n", dwStatus);
-        CloseHandle(hFile);
+        KERNEL32$CloseHandle(hFile);
         return(dwStatus);
     }
 
@@ -80,15 +81,15 @@ void go(char* args, int alen)
     printf("L-77, %s --- should be %s\n\n", alg, args[2]);
 #endif
 
-    if (strcmp(alg, "md5") == 0)
+    if (MSVCRT$strcmp(alg, "md5") == 0)
     {
         algid = CALG_MD5;
     }
-    else if (strcmp(alg, "sha256") == 0 )
+    else if (MSVCRT$strcmp(alg, "sha256") == 0 )
     {
         algid = CALG_SHA_256;
     }
-    else if (strcmp(alg, "sha512") == 0)
+    else if (MSVCRT$strcmp(alg, "sha512") == 0)
     {
         algid = CALG_SHA_512;
     }
@@ -98,17 +99,17 @@ void go(char* args, int alen)
         return(-500);
     }
 
-    if (!CryptCreateHash(hProv, algid, 0, 0, &hHash))
+    if (!ADVAPI32$CryptCreateHash(hProv, algid, 0, 0, &hHash))
     {
-        dwStatus = GetLastError();
+        dwStatus = KERNEL32$GetLastError();
         printf("CryptCreateHash failure with code: %d\n", dwStatus);
-        CloseHandle(hFile);
-        CryptReleaseContext(hProv, 0);
+        KERNEL32$CloseHandle(hFile);
+        ADVAPI32$CryptReleaseContext(hProv, 0);
         return(dwStatus);
     }
 
     // Read the file contents for the hasher
-    while (bResult = ReadFile(hFile, rgbFile, BUFSIZE, &cbRead, NULL))
+    while (bResult = KERNEL32$ReadFile(hFile, rgbFile, BUFSIZE, &cbRead, NULL))
     {
         if (0 == cbRead)
         {
@@ -117,27 +118,27 @@ void go(char* args, int alen)
 
         if (!CryptHashData(hHash, rgbFile, cbRead, 0))
         {
-            dwStatus = GetLastError();
+            dwStatus = KERNEL32$GetLastError();
             printf("CryptHashData failure with code: %d\n", dwStatus);
-            CryptReleaseContext(hProv, 0);
-            CryptDestroyHash(hHash);
-            CloseHandle(hFile);
+            ADVAPI32$CryptReleaseContext(hProv, 0);
+            ADVAPI32$CryptDestroyHash(hHash);
+            KERNEL32$CloseHandle(hFile);
             return(dwStatus);
         }
     }
 
     if (!bResult)
     {
-        dwStatus = GetLastError();
+        dwStatus = KERNEL32$GetLastError();
         printf("ReadFile call failure with code: %d\n", dwStatus);
-        CryptReleaseContext(hProv, 0);
-        CryptDestroyHash(hHash);
-        CloseHandle(hFile);
+        ADVAPI32$CryptReleaseContext(hProv, 0);
+        ADVAPI32$CryptDestroyHash(hHash);
+        KERNEL32$CloseHandle(hFile);
         return(dwStatus);
     }
 
     // Original hashstring calculation regards usage of cbhash for correct bits length
-    if (CryptGetHashParam(hHash, HP_HASHVAL, rgbHash, &cbHash, 0))
+    if (ADVAPI32$CryptGetHashParam(hHash, HP_HASHVAL, rgbHash, &cbHash, 0))
     {
         //cbHash internal bit count is automatically calculated by the API so no need for manual defines
         //Maybe swap out for cats?
@@ -150,13 +151,13 @@ void go(char* args, int alen)
     }
     else
     {
-        dwStatus = GetLastError();
-        printf("CryptGetHashParam failure with code: %d\n", dwStatus);
+        dwStatus = KERNEL32$GetLastError();
+        printf("ADVAPI32$CryptGetHashParam failure with code: %d\n", dwStatus);
         return(dwStatus);
     }
 
-    CryptDestroyHash(hHash);
-    CryptReleaseContext(hProv, 0);
-    CloseHandle(hFile);
+    ADVAPI32$CryptDestroyHash(hHash);
+    ADVAPI32$CryptReleaseContext(hProv, 0);
+    KERNEL32$CloseHandle(hFile);
     return(dwStatus);
 }
