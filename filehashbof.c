@@ -75,7 +75,7 @@ void go(char* args, int alen)
     // CALG_MD5
     // CALG_SHA_256
     // CALG_SHA_512
-    PCHAR alg = tolower(args[2]);
+    PCHAR alg = args[2];
     UINT algid = 0;
 #ifdef DBG
     printf("L-77, %s --- should be %s\n\n", alg, args[2]);
