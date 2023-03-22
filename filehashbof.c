@@ -6,6 +6,8 @@
 #include <string.h>
 #include <windows.h>
 #include <Wincrypt.h>
+#include "beacon.h"
+#include "filehashbof.h"
 
 // Internal State Size Bits
 #define MD5LEN 16
