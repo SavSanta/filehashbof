@@ -52,7 +52,7 @@ DWORD main(int argc, char* argv[])
     {
         dwStatus = GetLastError();
         printf("Error opening file %s\nError: %d\n", file, dwStatus);
-        exit(dwStatus);
+        return(dwStatus);
     }
 
     // Grabs ctx CSP Provider using the best suited for our current supported hashs
@@ -65,7 +65,7 @@ DWORD main(int argc, char* argv[])
         dwStatus = GetLastError();
         printf("CryptAcquireContext failure with code: %d\n", dwStatus);
         CloseHandle(hFile);
-        exit(dwStatus);
+        return(dwStatus);
     }
 
     // Key hashing supportable WIN32 HASHING ALGS
@@ -93,7 +93,7 @@ DWORD main(int argc, char* argv[])
     else
     {
         printf("Error: Algorithm does not appear to be supported.");
-        exit(-500);
+        return(-500);
     }
 
     if (!CryptCreateHash(hProv, algid, 0, 0, &hHash))
@@ -102,7 +102,7 @@ DWORD main(int argc, char* argv[])
         printf("CryptCreateHash failure with code: %d\n", dwStatus);
         CloseHandle(hFile);
         CryptReleaseContext(hProv, 0);
-        exit(dwStatus);
+        return(dwStatus);
     }
 
     // Read the file contents for the hasher
@@ -120,7 +120,7 @@ DWORD main(int argc, char* argv[])
             CryptReleaseContext(hProv, 0);
             CryptDestroyHash(hHash);
             CloseHandle(hFile);
-            exit(dwStatus);
+            return(dwStatus);
         }
     }
 
@@ -131,7 +131,7 @@ DWORD main(int argc, char* argv[])
         CryptReleaseContext(hProv, 0);
         CryptDestroyHash(hHash);
         CloseHandle(hFile);
-        exit(dwStatus);
+        return(dwStatus);
     }
 
     // Original hashstring calculation regards usage of cbhash for correct bits length
@@ -150,11 +150,11 @@ DWORD main(int argc, char* argv[])
     {
         dwStatus = GetLastError();
         printf("CryptGetHashParam failure with code: %d\n", dwStatus);
-        exit(dwStatus);
+        return(dwStatus);
     }
 
     CryptDestroyHash(hHash);
     CryptReleaseContext(hProv, 0);
     CloseHandle(hFile);
-    exit(dwStatus);
+    return(dwStatus);
 }
