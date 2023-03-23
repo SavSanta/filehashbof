@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <windows.h>
-#include <Wincrypt.h>
+#include <wincrypt.h>
 #include "beacon.h"
 #include "filehashbof.h"
 
@@ -152,9 +152,9 @@ void go(char* args, int alen)
             MSVCRT$strcat(hexdgst, inthexdgst);
             //BeaconPrintf(CALLBACK_OUTPUT, "%c%c", rgbDigits[rgbHash[i] >> 4], rgbDigits[rgbHash[i] & 0xf]);
         }
-        BeaconPrintf(CALLBACK_OUTPUT, "%s \t %s-hash\t %s", hexdgst, alg, file);
-        BeaconPrintf(CALLBACK_OUTPUT, "\n");
-    }   
+        BeaconPrintf(CALLBACK_OUTPUT_OEM, "\n%s \t %s-hash\t %s\n", hexdgst, alg, file);
+
+    }
     else
     {
         dwStatus = KERNEL32$GetLastError();
