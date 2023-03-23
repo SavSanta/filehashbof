@@ -143,8 +143,8 @@ void go(char* args, int alen)
     {
         //cbHash internal bit count is automatically calculated by the API so no need for manual defines
         //Maybe swap out for cats?
-        CHAR hexdgst[20];
-        CHAR inthexdgst[200];
+        CHAR hexdgst[200];
+        CHAR inthexdgst[10];
 
         for (DWORD i = 0; i < cbHash; i++)
         {
