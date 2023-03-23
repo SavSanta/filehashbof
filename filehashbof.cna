@@ -1,10 +1,12 @@
 beacon_command_register(
 "filehashbof",
-"filehashbof: FileHash",
-"\nUsage: filehashbof C:\\server123\\somefile.txt sha256 \n"
+"filehashbof: FileHash BOF",
+"\nUsage: filehashbof C:\\server123\\somefile.txt md5\n
+          filehashbof C:\\server123\\somefile.txt sha256\n
+          filehashbof C:\\server123\\somefile.txt sha512\n"
 );
 
-alias fhb {
+alias filehashbof {
 	local('$bid $barch $handle $data $path $hashtype $args');
 	
 	$bid = $1;
@@ -12,8 +14,7 @@ alias fhb {
 	$barch  = barch($1);
 	
 	# read in the right BOF file
-	#$handle = openf(script_resource("filehash. $+ $barch $+ .o"));
-	$handle = openf("/home/kali/Projects/filehashbof/filehashbof.x86.o");
+	$handle = openf(script_resource("filehashbof. $+ $barch $+ .o"));
 	$data   = readb($handle, -1);
 	closef($handle);
 	
@@ -26,13 +27,16 @@ alias fhb {
             return;
         }
 
+    println("arguments for path - $path and hashtype - $hashtype");
 	# pack args
 	$args = bof_pack($bid, "zz", $path, $hashtype);
+	println("The beacon ID is - $bid");
+	println("The packed arags - $args");
 	
 	# announce what we're doing
-	btask($1, "Running filehash BOF");
+	btask($1, "Running filehashbof \[$barch\]");
 	
 	# execute it.
 	beacon_inline_execute($1, $data, "go", $args);
-        blog2($bid, "Finished the filehashbof seq.");
 }
+
