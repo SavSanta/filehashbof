@@ -143,13 +143,18 @@ void go(char* args, int alen)
     {
         //cbHash internal bit count is automatically calculated by the API so no need for manual defines
         //Maybe swap out for cats?
+        CHAR hexdgst[20];
+        CHAR inthexdgst[200];
+
         for (DWORD i = 0; i < cbHash; i++)
         {
-            BeaconPrintf(CALLBACK_OUTPUT, "%c%c", rgbDigits[rgbHash[i] >> 4], rgbDigits[rgbHash[i] & 0xf]);
+            MSVCRT$sprintf(inthexdgst, "%c%c", rgbDigits[rgbHash[i] >> 4], rgbDigits[rgbHash[i] & 0xf]);
+            MSVCRT$strcat(hexdgst, inthexdgst);
+            //BeaconPrintf(CALLBACK_OUTPUT, "%c%c", rgbDigits[rgbHash[i] >> 4], rgbDigits[rgbHash[i] & 0xf]);
         }
-        BeaconPrintf(CALLBACK_OUTPUT, "\t %s-hash\t %s", alg, file);
+        BeaconPrintf(CALLBACK_OUTPUT, "%s \t %s-hash\t %s", hexdgst, alg, file);
         BeaconPrintf(CALLBACK_OUTPUT, "\n");
-    }
+    }   
     else
     {
         dwStatus = KERNEL32$GetLastError();

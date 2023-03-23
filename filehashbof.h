@@ -2,6 +2,8 @@
 
 // Note that all wincrypt aliases are essentially the same as standard because Windows C is fvcking dumb.
 WINBASEAPI int WINAPI MSVCRT$strcmp(const char* dest, const char* source);
+WINBASEAPI void* WINAPI MSVCRT$strcat(const char* dest, const char* source);
+WINBASEAPI void* WINAPI MSVCRT$sprintf(char* __stream, const char* __format, ...);
 WINBASEAPI HANDLE __stdcall KERNEL32$CreateFileA(LPCSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile);
 WINBASEAPI DWORD __stdcall KERNEL32$GetLastError(VOID);
 WINBASEAPI BOOL WINAPI KERNEL32$ReadFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, LPDWORD lpNumberOfBytesRead, LPOVERLAPPED lpOverlapped);
