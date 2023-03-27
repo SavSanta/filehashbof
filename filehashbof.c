@@ -154,7 +154,9 @@ void go(char* args, int alen)
             MSVCRT$strcat(hexdgst, inthexdgst);
         }
         BeaconPrintf(CALLBACK_OUTPUT_OEM, "\n%s \t %s-hash\t %s\n", hexdgst, alg, file);
+        MSVCRT$memset(hexdgst, 'Z', 4 * sizeof(char));
         CleanDigestString(hexdgst);
+        
     }
     else
     {
