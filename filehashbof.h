@@ -4,6 +4,7 @@
 WINBASEAPI int WINAPI MSVCRT$strcmp(const char* dest, const char* source);
 WINBASEAPI void* WINAPI MSVCRT$strcat(const char* dest, const char* source);
 WINBASEAPI void* WINAPI MSVCRT$sprintf(char* __stream, const char* __format, ...);
+WINBASEAPI size_t __cdecl MSVCRT$strlen(const char* _Str);
 //WINBASEAPI void* WINAPI MEMORY$memset(void* __dst, int __val, size_t __n);
 //WINBASEAPI void* WINAPI STRING$memset(void* __dst, int __val, size_t __n);
 WINBASEAPI HANDLE __stdcall KERNEL32$CreateFileA(LPCSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile);
