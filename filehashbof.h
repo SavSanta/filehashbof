@@ -1,5 +1,6 @@
 #pragma once
 
+void CleanDigestString(PCHAR);
 // Note that all wincrypt aliases are essentially the same as standard because Windows C is fvcking dumb.
 WINBASEAPI int WINAPI MSVCRT$strcmp(const char* dest, const char* source);
 WINBASEAPI void* WINAPI MSVCRT$strcat(const char* dest, const char* source);
