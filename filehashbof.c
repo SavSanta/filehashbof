@@ -14,6 +14,8 @@
 #define SHA512 64
 #define BUFSIZE 1024
 
+void CleanDigestString(PCHAR);
+
 void go(char* args, int alen)
 {
     datap parser;
@@ -150,10 +152,9 @@ void go(char* args, int alen)
         {
             MSVCRT$sprintf(inthexdgst, "%c%c", rgbDigits[rgbHash[i] >> 4], rgbDigits[rgbHash[i] & 0xf]);
             MSVCRT$strcat(hexdgst, inthexdgst);
-            //BeaconPrintf(CALLBACK_OUTPUT, "%c%c", rgbDigits[rgbHash[i] >> 4], rgbDigits[rgbHash[i] & 0xf]);
         }
         BeaconPrintf(CALLBACK_OUTPUT_OEM, "\n%s \t %s-hash\t %s\n", hexdgst, alg, file);
-
+        CleanDigestString(hexdgst);
     }
     else
     {
@@ -166,4 +167,14 @@ void go(char* args, int alen)
     ADVAPI32$CryptReleaseContext(hProv, 0);
     KERNEL32$CloseHandle(hFile);
     return;
+}
+
+void CleanDigestString(PCHAR hd)
+{
+    
+    for (DWORD i = 0; i < MSVCRT$strlen(hd); i++)
+    {
+        BeaconPrintf(CALLBACK_OUTPUT, "Counter = %i and t/f %i", i, hd[i]);
+    }
+
 }
