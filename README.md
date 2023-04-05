@@ -1,9 +1,9 @@
 
 # Usage Syntax
 ```
-Usage: filehashbof C:\\server123\\somefile.txt md5
-       filehashbof C:\\server123\\somefile.txt sha256
-       filehashbof C:\\server123\\somefile.txt sha512
+Usage: filehashbof C:\server123\somefile.txt md5
+       filehashbof C:\server123\somefile.txt sha256
+       filehashbof C:\server123\somefile.txt sha512
 ```
 
 # CS Beacon Output
