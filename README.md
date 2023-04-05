@@ -9,7 +9,7 @@ Usage: filehashbof C:\server123\somefile.txt md5
 # CS Beacon Output
 
 ```
-[03/28 09:09:06] beacon> filehashbof C:\\Users\\Administrator\\Downloads\\processhacker-2.39-bin.zip sha256
+[03/28 09:09:06] beacon> filehashbof C:\Users\Administrator\Downloads\processhacker-2.39-bin.zip sha256
 [03/28 09:09:06] [*] Running filehashbof [x86]
 [03/28 09:09:07] [+] host called home, sent: 3610 bytes
 [03/28 09:09:08] [+] received output:
