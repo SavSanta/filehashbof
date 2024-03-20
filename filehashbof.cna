@@ -27,7 +27,11 @@ alias filehashbof {
             return;
         }
 
-    println("arguments for path - $path and hashtype - $hashtype");
+	if ($DEVDEBUG) 
+	{
+    		println("filehashbof received arguments for path - $path and hashtype - $hashtype");
+	}
+
 	# pack args
 	$args = bof_pack($bid, "zz", $path, $hashtype);
 	println("The beacon ID is - $bid");
