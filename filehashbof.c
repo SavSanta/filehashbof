@@ -151,7 +151,8 @@ void go(char* args, int alen)
             MSVCRT$sprintf(inthexdgst, "%c%c", rgbDigits[rgbHash[i] >> 4], rgbDigits[rgbHash[i] & 0xf]);
             MSVCRT$strcat(hexdgst, inthexdgst);
         }
-        MSVCRT$memset(hexdgst, '_', 2 * sizeof(char));
+        // UNDERSCORE_NOPOUT 4 bytes (2 chars).
+        MSVCRT$memset(hexdgst, '_', 4 * sizeof(char));
         BeaconPrintf(CALLBACK_OUTPUT_OEM, "\n%s \t %s-hash\t %s\n", hexdgst, alg, file);
         //CleanDigestString(hexdgst);
         
