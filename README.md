@@ -19,7 +19,9 @@ _≡2AFB5303E191DDE688C5626C3EE545E32E52F09DA3B35B20F5E0D29A418432F5 	 sha256-ha
 
 # Caveats
 - Windows in FIPS-140 modes dont have MD5 algorithim available. Thus MD5 shouldnt work on those systems. 
-- Hash output display is a bit ugly. TODO: Cleanup and verf string
+
+# TODO: 
+- Robust testing and verification of underscore NOP'd out ugly chars.
 
 # Credits
 - Microsoft Help Forums
