@@ -24,7 +24,7 @@ void go(char* args, int alen)
     HCRYPTHASH hHash = 0;
     DWORD cbRead = 0;
     DWORD cbHash = 0;
-    BYTE rgbFile[BUFSIZE];
+    BYTE rgbFile[BUFSIZE] = { 0 };
     CHAR rgbDigits[] = "0123456789ABCDEF";
     PCHAR file = NULL;
     PCHAR alg = NULL;
@@ -33,7 +33,7 @@ void go(char* args, int alen)
     // Switch Case should ideally go here for alternative HASHING implementations 
     // However with testing leaving this SHA512 seems to be fine in ignoring cap
     // Could also preallocate with char null-terms but for minimum viability will leave as so.
-    BYTE rgbHash[SHA512];
+    BYTE rgbHash[SHA512] = { 0 };
     cbHash = SHA512;
 
     BeaconDataParse(&parser, args, alen);
@@ -96,7 +96,9 @@ void go(char* args, int alen)
     }
     else
     {
-        BeaconPrintf(CALLBACK_ERROR, "Error: Algorithm does not appear to be supported.");
+        BeaconPrintf(CALLBACK_ERROR, "Error: Algorithim does not appear to be supported.");
+        CloseHandle(hFile);
+        ADVAPI32$CryptReleaseContext(hProv, 0);       //<---- doublecheck this
         return;
     }
 
@@ -143,18 +145,23 @@ void go(char* args, int alen)
     {
         //cbHash internal bit count is automatically calculated by the API so no need for manual defines
         //Maybe swap out for cats?
-        CHAR hexdgst[200];
-        CHAR inthexdgst[10];
+        CHAR hexdgst[200] = { 0 };
+        CHAR inthexdgst[10] = { 0 };
 
-        for (DWORD i = 0; i < cbHash; i++)
-        {
-            MSVCRT$sprintf(inthexdgst, "%c%c", rgbDigits[rgbHash[i] >> 4], rgbDigits[rgbHash[i] & 0xf]);
-            MSVCRT$strcat(hexdgst, inthexdgst);
+        // Commented out in favor of the next block.
+        // This is slower and unsafe (but not really because i deliberately overprovision the buffer past current 128 char max) 
+        // but possibly more stealthy due to loop iterations
+        //for (DWORD i = 0; i < cbHash; i++)
+        //{
+        //    MSVCRT$sprintf(inthexdgst, "%c%c", rgbDigits[rgbHash[i] >> 4], rgbDigits[rgbHash[i] & 0xf]);
+        //    MSVCRT$strcat(hexdgst, inthexdgst);
+        //}
+ 
+        for (DWORD i = 0; i < cbHash; i++) 
+        { 
+            sprintf(&hexdgst[i * 2], "%02X", rgbHash[i]); 
         }
-        // UNDERSCORE_NOPOUT 4 bytes (2 chars).
-        // TODO: Verify the issue of the ugly chars because it was reported in Win11 x64 the nopout is removing the first 4 
-        // Originally this was tested with win10 x86 so if MS the underlying apis have changed/fixed, the foloowing it may not be necessary.
-        //MSVCRT$memset(hexdgst, '_', 4 * sizeof(char));
+        
         BeaconPrintf(CALLBACK_OUTPUT_OEM, "\n%s \t %s-hash\t %s\n", hexdgst, alg, file);
         //CleanDigestString(hexdgst);
         
@@ -174,7 +181,7 @@ void go(char* args, int alen)
 
 void CleanDigestString(PCHAR hd)
 {
-    
+   
     for (DWORD i = 0; i < MSVCRT$strlen(hd); i++)
     {
         BeaconPrintf(CALLBACK_OUTPUT, "Counter = %i and t/f %i", i, hd[i]);
