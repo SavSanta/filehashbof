@@ -152,7 +152,9 @@ void go(char* args, int alen)
             MSVCRT$strcat(hexdgst, inthexdgst);
         }
         // UNDERSCORE_NOPOUT 4 bytes (2 chars).
-        MSVCRT$memset(hexdgst, '_', 4 * sizeof(char));
+        // TODO: Verify the issue of the ugly chars because it was reported in Win11 x64 the nopout is removing the first 4 
+        // Originally this was tested with win10 x86 so if MS the underlying apis have changed/fixed, the foloowing it may not be necessary.
+        //MSVCRT$memset(hexdgst, '_', 4 * sizeof(char));
         BeaconPrintf(CALLBACK_OUTPUT_OEM, "\n%s \t %s-hash\t %s\n", hexdgst, alg, file);
         //CleanDigestString(hexdgst);
         
