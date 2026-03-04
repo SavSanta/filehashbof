@@ -14,14 +14,11 @@ Usage: filehashbof C:\server123\somefile.txt md5
 [03/28 09:09:07] [+] host called home, sent: 3610 bytes
 [03/28 09:09:08] [+] received output:
 
-__2AFB5303E191DDE688C5626C3EE545E32E52F09DA3B35B20F5E0D29A418432F5 	 sha256-hash	 C:\Users\Administrator\Downloads\processhacker-2.39-bin.zip
+2AFB5303E191DDE688C5626C3EE545E32E52F09DA3B35B20F5E0D29A418432F5 	 sha256-hash	 C:\Users\Administrator\Downloads\processhacker-2.39-bin.zip
 ```
 
 # Caveats
 - Windows in FIPS-140 modes dont have MD5 algorithim available. Thus MD5 shouldnt work on those systems. 
-
-# TODO: 
-- Robust testing and verification of underscore NOP'd out ugly chars.
 
 # Credits
 - Microsoft Help Forums
