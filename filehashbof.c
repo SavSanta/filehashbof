@@ -96,8 +96,8 @@ void go(char* args, int alen)
     }
     else
     {
-        BeaconPrintf(CALLBACK_ERROR, "Error: Algorithim does not appear to be supported.");
-        CloseHandle(hFile);
+        BeaconPrintf(CALLBACK_ERROR, "Error: Algorithim does not appear to be supported. (or it needs be specified lowercased)");
+        KERNEL32$CloseHandle(hFile);
         ADVAPI32$CryptReleaseContext(hProv, 0);       //<---- doublecheck this
         return;
     }
@@ -148,7 +148,7 @@ void go(char* args, int alen)
         CHAR hexdgst[200] = { 0 };
         CHAR inthexdgst[10] = { 0 };
 
-        // Commented out in favor of the next block.
+        // Block 1. Commented out in favor of the next Block 2.
         // This is slower and unsafe (but not really because i deliberately overprovision the buffer past current 128 char max) 
         // but possibly more stealthy due to loop iterations
         //for (DWORD i = 0; i < cbHash; i++)
@@ -156,15 +156,27 @@ void go(char* args, int alen)
         //    MSVCRT$sprintf(inthexdgst, "%c%c", rgbDigits[rgbHash[i] >> 4], rgbDigits[rgbHash[i] & 0xf]);
         //    MSVCRT$strcat(hexdgst, inthexdgst);
         //}
- 
-        for (DWORD i = 0; i < cbHash; i++) 
-        { 
-            sprintf(&hexdgst[i * 2], "%02X", rgbHash[i]); 
+
+        //Block 2
+        // So this works but due to some issues with sprintf and some other issues I notice x86 still prints junkchars in front (altho the value is still correct). 
+        // So hopefully we can deprecated this in favor of the Block 3. Which fixes our x86 issue brings back out stealth too.
+        //for (DWORD i = 0; i < cbHash; i++)
+        //{
+        //    MSVCRT$sprintf(&hexdgst[i * 2], "%02X", rgbHash[i]);
+        //}
+
+        //Block 3
+        // This version will likely fix the sprintf errors (if i dont prefill the buffer) but I cant get it to work (in Cobalt Strike) due to non-specific or internal memset call that is translated from the last nullification.
+        // Will hopefully investigate later
+        for (DWORD i = 0; i < cbHash; i++)
+        {
+            hexdgst[i * 2] = rgbDigits[(rgbHash[i] >> 4) & 0xF];
+            hexdgst[i * 2 + 1] = rgbDigits[rgbHash[i] & 0xF];
         }
-        
+        hexdgst[cbHash * 2] = '\0';
+
         BeaconPrintf(CALLBACK_OUTPUT_OEM, "\n%s \t %s-hash\t %s\n", hexdgst, alg, file);
-        //CleanDigestString(hexdgst);
-        
+
     }
     else
     {
@@ -181,7 +193,7 @@ void go(char* args, int alen)
 
 void CleanDigestString(PCHAR hd)
 {
-   
+
     for (DWORD i = 0; i < MSVCRT$strlen(hd); i++)
     {
         BeaconPrintf(CALLBACK_OUTPUT, "Counter = %i and t/f %i", i, hd[i]);
